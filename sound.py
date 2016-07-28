@@ -58,21 +58,6 @@ def generate_chord(T=1,fs=44100,noise=True):
 		sig = sig + noise_var*np.random.randn(T*fs)
 	return sig/3, label
 
-"""
-def generate_chord_batch(batch_size,T=0.1):
-	# start batch with one chord
-	chord,label = generate_chord(T=T)
-	chords = np.reshape(chord,(-1,1))
-	labels = np.reshape(label,(-1,1))
-
-	# add rest of chords to batch
-	for i in range(1,batch_size):
-		if i%100==0: print(i)
-		chord,label = generate_chord(T=T)
-		chords = np.concatenate((chords,np.reshape(chord,(-1,1))),axis=1)
-		labels = np.concatenate((labels,np.reshape(label,(-1,1))),axis=1)
-	return np.transpose(chords),np.transpose(labels)
-"""
 def generate_chord_batch(batch_size,T=0.1):
 	chords = []
 	labels = []
@@ -83,7 +68,7 @@ def generate_chord_batch(batch_size,T=0.1):
 		chords.append(chord)
 		labels.append(label)
 	chords = np.vstack(chords)
-	labels = np.vstack(labels)
+	labels = np.array(labels)
 	return chords,labels
 
 def play_chord(sig,fs=44100):
@@ -94,11 +79,6 @@ def plot_chord(sig):
 	import matplotlib.pylab as plt
 	t = np.linspace(0,1,sig.shape[0])
 	plt.plot(t[:2000],sig[:2000])
-	plt.show()
-
-def histogram(labels):
-	import matplotlib.pylab as plt
-	n,bins,patches = plt.hist(labels,12,normed=1, facecolor='green', alpha=0.75)
 	plt.show()
 
 if __name__ == '__main__':
