@@ -55,7 +55,7 @@ def generate_chord(T=1,fs=44100,noise=True):
 
 	sig = signal.square(f1*2*np.pi*t + phase1) + signal.square(f2*2*np.pi*t + phase2) + signal.square(f3*2*np.pi*t + phase3)
 	if noise:
-		sig = sig + noise_var*np.random.randn(T*fs)
+		sig = sig + noise_var*np.random.randn(int(T*fs))
 	return sig/3, label-1
 
 def generate_chord_batch(batch_size,T=0.1,fs=44100):
