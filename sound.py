@@ -7,18 +7,18 @@ def generate_chord(T=1,fs=44100,noise=True):
 	for duration T with sampling rate fs
 
 	Return chord and label
-	1  = Ab	/ G#
-	2  = A
-	3  = Bb / A#
-	4  = B
-	5  = C
-	6  = Db / C#
-	7  = D
-	8  = Eb / D#
-	9  = E
-	10 = F
-	11 = Gb / F#
-	12 = G
+	0  = Ab	/ G#
+	1  = A
+	2  = Bb / A#
+	3  = B
+	4  = C
+	5  = Db / C#
+	6  = D
+	7  = Eb / D#
+	8  = E
+	9  = F
+	10 = Gb / F#
+	11 = G
 	"""
 	t = np.linspace(0,T,T*fs)
 	n1 = np.random.randint(1+17,88-10)
@@ -56,15 +56,15 @@ def generate_chord(T=1,fs=44100,noise=True):
 	sig = signal.square(f1*2*np.pi*t + phase1) + signal.square(f2*2*np.pi*t + phase2) + signal.square(f3*2*np.pi*t + phase3)
 	if noise:
 		sig = sig + noise_var*np.random.randn(T*fs)
-	return sig/3, label
+	return sig/3, label-1
 
-def generate_chord_batch(batch_size,T=0.1):
+def generate_chord_batch(batch_size,T=0.1,fs=44100):
 	chords = []
 	labels = []
 	# add rest of chords to batch
 	for i in range(0,batch_size):
-		if i%100==0: print(i)
-		chord,label = generate_chord(T=T)
+		# if i%100==0: print(i)
+		chord,label = generate_chord(T=T,fs=fs)
 		chords.append(chord)
 		labels.append(label)
 	chords = np.vstack(chords)
