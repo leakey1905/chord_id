@@ -6,7 +6,7 @@ def generate_chord(T=1,fs=44100,noise=True):
 	Generate random major chord with amplitude 1
 	for duration T with sampling rate fs
 
-	Return chord and label
+	Return chord and label (pitch class)
 	0  = Ab	/ G#
 	1  = A
 	2  = Bb / A#

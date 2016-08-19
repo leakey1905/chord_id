@@ -48,15 +48,16 @@ with graph.as_default():
 	fc2_biases = tf.Variable(tf.zeros([num_labels]),name="fc2_biases",dtype=tf.float32)
 
 	# Training computation.
-	logits = tf.matmul(tf.nn.relu(tf.matmul(tf_train_dataset, fc1_weights) + fc1_biases),fc2_weights) + fc2_biases
+	train_logits = tf.matmul(tf.nn.relu(tf.matmul(tf_train_dataset, fc1_weights) + fc1_biases),fc2_weights) + fc2_biases
 	loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, tf_train_labels))
 
 	# Optimizer.
 	optimizer = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
 	# Predictions for the training, validation, and test data.
-	train_prediction = tf.nn.softmax(logits)
-	valid_prediction = tf.nn.softmax(tf.matmul(tf.nn.relu(tf.matmul(tf_valid_dataset, fc1_weights) + fc1_biases),fc2_weights) + fc2_biases)
+	valid_logits = tf.matmul(tf.nn.relu(tf.matmul(tf_valid_dataset, fc1_weights) + fc1_biases),fc2_weights) + fc2_biases
+	train_prediction = tf.nn.softmax(train_logits)
+	valid_prediction = tf.nn.softmax(valid_logits)
 
 # run DFG
 num_steps = 200 + 1
@@ -78,23 +79,29 @@ with tf.Session(graph=graph) as session:
 		_, l, predictions = session.run([optimizer, loss, train_prediction], feed_dict=feed_dict)
 		if (step % 10 == 0):
 			train_acc = accuracy(predictions, batch_labels)
-			print("Training predictions and labels:")
-			print(np.argmax(predictions, 1))
-			print(np.argmax(batch_labels, 1))
-			print((np.argmax(predictions, 1) == np.argmax(batch_labels, 1)).astype(np.int32))
-			print("Validation predictions and labels:")
-			print(np.argmax(valid_prediction.eval(), 1))
-			print(np.argmax(valid_labels, 1))
-			print((np.argmax(valid_prediction.eval(), 1) == np.argmax(valid_labels, 1)).astype(np.int32))
 			valid_acc = accuracy(valid_prediction.eval(), valid_labels)
 			print("Minibatch loss at step %d: %f" % (step, l))
 			print("Minibatch accuracy: %.1f%%" % train_acc)
 			print("Validation accuracy: %.1f%%" % valid_acc)
 
-	# Finally, play the weights:
+	# Finally, save the weights:
 	weights1 = fc1_weights.eval()
 	biases1 = fc1_biases.eval()
 	weights2 = fc2_weights.eval()
 	biases2 = fc2_biases.eval()
 
-	# To examine variables, run using python -i tf_audio_conv.py
+	fo = open("fc1_weights",'wb')
+	cPickle.dump(weights1,fo,cPickle.HIGHEST_PROTOCOL)
+	fo.close()
+
+	fo = open("fc1_biases",'wb')
+	cPickle.dump(biases1,fo,cPickle.HIGHEST_PROTOCOL)
+	fo.close()
+
+	fo = open("fc2_weights",'wb')
+	cPickle.dump(weights2,fo,cPickle.HIGHEST_PROTOCOL)
+	fo.close()
+
+	fo = open("fc2_biases",'wb')
+	cPickle.dump(biases2,fo,cPickle.HIGHEST_PROTOCOL)
+	fo.close()
